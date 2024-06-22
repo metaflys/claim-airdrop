@@ -12,7 +12,7 @@ if __name__ =="__main__":#line:140
         file_path =os .path .join (folder_path ,file_name )#line:149
         os .remove (file_path )#line:150
     w3 =Web3 (Web3 .HTTPProvider (config .noda ))#line:152
-    chainid =167000 #line:155
+    chainid =56 #line:155
     gasprice =3000000000 #line:156
     with open ('template.keys','r')as file :#line:158
         lines =file .readlines ()#line:159
@@ -61,26 +61,6 @@ if __name__ =="__main__":#line:140
                         dataHexValues .append (dataHexValue )#line:217
                         tokenAddressClaim =parts [3 ].strip ()#line:219
                         tokenAddressClaims .append (tokenAddressClaim )#line:220
-                    else :#line:221
-                        print ("Найден NATIV")#line:222
-                        contractAddressNativ =parts [1 ].strip ()#line:223
-                        contractAddressesClaimNativ .append (contractAddressNativ )#line:224
-                        dataHexValueNativ =parts [2 ].strip ()#line:226
-                        dataHexValuesNativ .append (dataHexValueNativ )#line:227
-                elif manualg =='m':#line:228
-                    print ('Найден TRANS manual GAS')#line:229
-                    GastransDefault =parts [4 ].strip ()#line:230
-                    GastrDefault .append (GastransDefault )#line:231
-                    mcontractAddresstransDefault =parts [2 ].strip ()#line:233
-                    mcontractAddressesDefault .append (mcontractAddresstransDefault )#line:234
-                    mdataHexValueDefault =parts [3 ].strip ()#line:236
-                    mdataHexValuesDefault .append (mdataHexValueDefault )#line:237
-                else :#line:238
-                    print (' TRANS обычный')#line:239
-                    contractAddresstransDefault =parts [1 ].strip ()#line:240
-                    contractAddressesDefault .append (contractAddresstransDefault )#line:241
-                    dataHexValueDefault =parts [2 ].strip ()#line:243
-                    dataHexValuesDefault .append (dataHexValueDefault )#line:244
             elif firstPart =='WITHDRAW_TOKENS':#line:245
                 print (' WITHDRAW_TOKENS')#line:246
                 tokenAddressToken =parts [1 ].strip ()#line:247
@@ -137,68 +117,13 @@ if __name__ =="__main__":#line:140
             nonceSender +=1 #line:336
             signed_tx2 =w3 .eth .account .sign_transaction (tx2 ,senderPrivateKey )#line:337
             signedTransactionsBundle .append (signed_tx2 .rawTransaction .hex (),)#line:341
-    for j in range (len (contractAddressesDefault )):#line:345
-        contractAddressDefault =contractAddressesDefault [j ]#line:346
-        dataHexValueDefault =dataHexValuesDefault [j ]#line:347
-        gaslimgetTrans =getGas (contractAddressDefault ,dataHexValueDefault ,senderaddress )#line:348
-        nativtosend =gaslimgetTrans *gasprice #line:350
-        nativfulltosend .append (nativtosend )#line:351
-        print (f"DEFAULT TRANS ==> Gas trans: {gaslimgetTrans} | Nativ wei: {nativtosend}")#line:352
-        tx1 ={"nonce":nonceSender ,"to":w3 .to_checksum_address (contractAddressDefault ),"data":dataHexValueDefault ,"gas":int (gaslimgetTrans ),"gasPrice":gasprice ,}#line:359
-        nonceSender +=1 #line:360
-        signed_tx1 =w3 .eth .account .sign_transaction (tx1 ,senderPrivateKey )#line:361
-        signedTransactionsBundle .append (signed_tx1 .rawTransaction .hex (),)#line:364
-    for j in range (len (mcontractAddressesDefault )):#line:367
-        contractAddressDefault =mcontractAddressesDefault [j ]#line:368
-        dataHexValueDefault =mdataHexValuesDefault [j ]#line:369
-        gas =GastrDefault [j ]#line:370
-        nativtosend =gas *gasprice #line:372
-        nativfulltosend .append (nativtosend )#line:373
-        print (f"DEFAULT TRANS ==> Gas trans: {gas} | Nativ wei: {nativtosend}")#line:374
-        tx1 ={"nonce":nonceSender ,"to":w3 .to_checksum_address (contractAddressDefault ),"data":dataHexValueDefault ,"gas":int (gas ),"gasPrice":gasprice ,}#line:382
-        nonceSender +=1 #line:383
-        signed_tx1 =w3 .eth .account .sign_transaction (tx1 ,senderPrivateKey )#line:384
-        signedTransactionsBundle .append (signed_tx1 .rawTransaction .hex (),)#line:387
-    for j in range (len (withdrawTokenAddresses )):#line:390
-        tokaddrrr =withdrawTokenAddresses [j ]#line:391
-        recipient_bytes =Web3 .to_bytes (hexstr =config .receive_address )#line:392
-        balanceTok =balanceof (w3 .to_checksum_address (tokaddrrr ))#line:393
-        amount_bytes =balanceTok .to_bytes (32 ,byteorder ='big')#line:394
-        datafortoken ="0xA9d23408b9bA935c230493c40C73824Df71A0975"+recipient_bytes .hex ()+amount_bytes .hex ()#line:396
-        gaslimgetToken =getGas (tokaddrrr ,datafortoken ,senderaddress )#line:398
-        nativtosend =gaslimgetToken *gasprice #line:399
-        nativfulltosend .append (nativtosend )#line:400
-        print (f"TOKEN ==> Gas token: {gaslimgetToken} | Nativ wei: {nativtosend}")#line:402
-        tx1 ={"nonce":nonceSender ,"to":w3 .to_checksum_address (tokaddrrr ),"data":datafortoken ,"gas":int (gaslimgetToken ),"gasPrice":gasprice ,}#line:410
-        nonceSender +=1 #line:411
-        signed_tx1 =w3 .eth .account .sign_transaction (tx1 ,senderPrivateKey )#line:412
-        signedTransactionsBundle .append (signed_tx1 .rawTransaction .hex (),)#line:415
-    sumnativ =sum (nativfulltosend )#line:421
-    print ('Общая сумма натива ==>',sumnativ )#line:422
     txNativ ={"nonce":w3 .eth .get_transaction_count (address1 ),"to":w3 .to_checksum_address (senderaddress ),"value":sumnativ ,"gas":21000 ,"gasPrice":config .gweinativ ,}#line:430
     signed_txNativ =w3 .eth .account .sign_transaction (txNativ ,donorPrivateKey )#line:431
     signedTransactionsBundle .insert (0 ,signed_txNativ .rawTransaction .hex (),)#line:434
     max_timestamp =int (time .mktime (datetime .datetime .now ().timetuple ())+60 )#line:436
     bundle ={"jsonrpc":"2.0","method":"eth_sendPuissant","params":[{"txs":signedTransactionsBundle ,"maxTimestamp":max_timestamp ,}],"id":1 }#line:447
-    api_url ='https://taiko.drpc.org/'#line:450
+    api_url ='https://puissant-bsc.48.club'#line:450
     headers ={'Content-Type':'application/json'}#line:451
     response =requests .post (api_url ,data =json .dumps (bundle ),headers =headers )#line:452
     print (response .json ())#line:454
     data =response .json ()#line:456
-    uuid =data .get ('result','')#line:457
-    if uuid .startswith ('0x'):#line:459
-        explorer_url =f'https://taikoscan.io{uuid}'#line:460
-        while True :#line:461
-            explorer_response =requests .get (explorer_url )#line:462
-            datauuid =json .loads (explorer_response .text )#line:463
-            print (datauuid )#line:464
-            status =datauuid ['value']['status']#line:465
-            print (f"Current status: {status}")#line:466
-            if status =="Pending in puissant queue.":#line:468
-                print ("Status is Pending in puissant queue. Continuing to check...")#line:469
-            else :#line:470
-                print ("Status is not Pending in puissant queue. Exiting loop.")#line:471
-                break #line:472
-            time .sleep (3 )#line:474
-    else :#line:475
-        print (data )
